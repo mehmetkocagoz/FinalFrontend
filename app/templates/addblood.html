@@ -30,8 +30,12 @@
                 <input type="number" id="unit" name="unit" required><br>
         
                 <label for="donorName">Donor Name:</label>
-                <input type="text" id="donorName" name="donorName" required><br>
-
+                <input type="text" id="donorName" name="donorName" list="donorNames" required>
+                <datalist id="donorNames">
+                    {% for donor in donor_list %}
+                    <option value="{{ donor }}"></option>
+                    {% endfor %}
+                </datalist><br>
                 <input type="submit" value="Add Blood to Bank" id="submit">
             </form>
         </div>
