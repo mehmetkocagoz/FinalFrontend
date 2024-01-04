@@ -1,0 +1,36 @@
+/* index.html styling */
+.content-wrapper{
+    width: 100%;
+    height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.content{
+    display: flex;
+    width: 400px;
+    justify-content: space-between;
+}
+
+a{
+    text-decoration: none;
+}
+a:hover{
+    text-decoration: underline;
+}
+
+/* login.html styling */
+
+.content-login h2{
+    text-align: center;
+}
+.content-login label{
+    display: flex;
+    width: 50%;
+}
+
+.content-login #submit{
+    margin-top: 1rem;
+    text-align: center;
+}
