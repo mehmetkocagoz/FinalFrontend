@@ -103,3 +103,8 @@ def createDonor():
             return render_template("createdonor.html",branch_name = branch_name)
         else:
             return redirect(url_for('login'))
+        
+@app.route("/logout",methods =['GET'])
+def logout():
+    session.clear()
+    return redirect(url_for('home'))
