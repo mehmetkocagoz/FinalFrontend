@@ -69,6 +69,7 @@ def requestBlood():
 def addBlood():
     if 'logged_in' in session and session['logged_in']:
         branch_name = session['username']
+        
         if request.method == 'POST':
             form_data = request.form.to_dict()
             
@@ -80,7 +81,15 @@ def addBlood():
                 message = api_response.get('Message')
                 return render_template("addblood.html",branch_name = branch_name,message = message)
         else:
-            return render_template("addblood.html",branch_name = branch_name)
+            # We need list of donor names therefore we will send a get request via API GATEWAY
+            form_data = {"branch_name":branch_name}
+            response = requests.get(API_GATEWAY_ADD_BLOOD,params=form_data)
+            try:
+                api_response = response.json()
+                donor_list = api_response.get('donor_list')
+                return render_template("addblood.html",branch_name = branch_name,donor_list = donor_list)
+            except:
+                print("Non-JSON response received.")
     else:
         return redirect(url_for('login'))
         
