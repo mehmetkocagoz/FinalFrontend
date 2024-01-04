@@ -67,42 +67,41 @@ def requestBlood():
 
 @app.route("/add",methods= ['GET','POST'])
 def addBlood():
-    branch_name = session['username']
-    if request.method == 'POST':
-        form_data = request.form.to_dict()
-        
-        response = requests.post(API_GATEWAY_ADD_BLOOD, json=form_data)
-        api_response = response.json()
-        status = api_response.get('status')
-        if status=='TRUE':
+    if 'logged_in' in session and session['logged_in']:
+        branch_name = session['username']
+        if request.method == 'POST':
+            form_data = request.form.to_dict()
             
-            message = api_response.get('Message')
-            return render_template("addblood.html",branch_name = branch_name,message = message)
-    else:
-        if 'logged_in' in session and session['logged_in']:
-            
-            return render_template("addblood.html",branch_name = branch_name)
+            response = requests.post(API_GATEWAY_ADD_BLOOD, json=form_data)
+            api_response = response.json()
+            status = api_response.get('status')
+            if status=='TRUE':
+                
+                message = api_response.get('Message')
+                return render_template("addblood.html",branch_name = branch_name,message = message)
         else:
-            return redirect(url_for('login'))
+            return render_template("addblood.html",branch_name = branch_name)
+    else:
+        return redirect(url_for('login'))
         
 @app.route("/create",methods=['GET','POST'])
 def createDonor():
-    branch_name = session['username']
-    if request.method == 'POST':
-        form_data = request.form.to_dict()
-        
-        response = requests.post(API_GATEWAY_CREATE_DONOR, json=form_data)
-        api_response = response.json()
-        status = api_response.get('status')
-        
-        if status == 'TRUE':
-            message = api_response.get('message')
-            return render_template("createdonor.html",branch_name=branch_name,message = message)
-    else:
-        if 'logged_in' in session and session['logged_in']: 
-            return render_template("createdonor.html",branch_name = branch_name)
+    if 'logged_in' in session and session['logged_in']: 
+        branch_name = session['username']
+        if request.method == 'POST':
+            form_data = request.form.to_dict()
+            
+            response = requests.post(API_GATEWAY_CREATE_DONOR, json=form_data)
+            api_response = response.json()
+            status = api_response.get('status')
+            
+            if status == 'TRUE':
+                message = api_response.get('message')
+                return render_template("createdonor.html",branch_name=branch_name,message = message)
         else:
-            return redirect(url_for('login'))
+            return render_template("createdonor.html",branch_name = branch_name)
+    else:
+        return redirect(url_for('login'))
         
 @app.route("/logout",methods =['GET'])
 def logout():
