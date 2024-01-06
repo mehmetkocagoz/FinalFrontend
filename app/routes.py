@@ -1,13 +1,18 @@
 from flask import render_template, request, jsonify, redirect, url_for,session
 from app import app
 import requests
-
+from azure.storage.blob import BlobServiceClient
+import os
+from dotenv import load_dotenv
+from werkzeug.utils import secure_filename
 app.secret_key = 'random_string'
 # Replace with your API Gateway URL
 API_GATEWAY_REQUEST_BLOOD = 'https://finalapigateway.azure-api.net/request'
 API_GATEWAY_LOGİN = 'https://finalapigateway.azure-api.net/login'
 API_GATEWAY_ADD_BLOOD = 'https://finalapigateway.azure-api.net/add'
 API_GATEWAY_CREATE_DONOR = 'https://finalapigateway.azure-api.net/create'
+
+load_dotenv()
 
 @app.route('/',methods = ['GET'])
 def home():
@@ -92,20 +97,46 @@ def addBlood():
                 print("Non-JSON response received.")
     else:
         return redirect(url_for('login'))
-        
+
+
+def uploadToBlobStorage(file_storage):
+    try:
+        blob_service_client = BlobServiceClient.from_connection_string(os.getenv('AZURE_STORAGE_CONNECTION_STRING'))
+        container_client = blob_service_client.get_container_client(os.getenv('AZURE_CONTAINER'))
+
+        # Extract the file stream and filename from FileStorage
+        stream = file_storage.stream
+        filename = secure_filename(file_storage.filename)
+
+        # Upload the file stream to the CDN
+        blob_client = container_client.upload_blob(name=filename, data=stream)
+
+        # Obtain the CDN URL from the blob client
+        cdn_url = blob_client.url
+
+        return cdn_url
+
+    except Exception as e:
+        print(f"Error uploading to CDN: {str(e)}")
+        return None
+    
 @app.route("/create",methods=['GET','POST'])
 def createDonor():
     if 'logged_in' in session and session['logged_in']: 
         branch_name = session['username']
         if request.method == 'POST':
             form_data = request.form.to_dict()
-            
-            response = requests.post(API_GATEWAY_CREATE_DONOR, json=form_data)
-            api_response = response.json()
-            status = api_response.get('status')
+            if 'photo' in request.files:
+                photo_file = request.files['photo']
+                cdn_url = uploadToBlobStorage(photo_file)
+                form_data['cdn_url'] = cdn_url
+                print(form_data)
+                response = requests.post(API_GATEWAY_CREATE_DONOR, json=form_data)
+                api_response = response.json()
+                status = api_response.get('status')
             
             if status == 'TRUE':
-                message = api_response.get('message')
+                message = api_response.get('messsage')
                 return render_template("createdonor.html",branch_name=branch_name,message = message)
         else:
             return render_template("createdonor.html",branch_name = branch_name)
