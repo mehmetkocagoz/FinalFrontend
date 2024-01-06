@@ -13,10 +13,18 @@
             <h2>{{ branch_name }}</h2>
             <a href="{{ url_for('logout') }}" id="logout">Basic Logout Button</a>
             <h2>{{ message }}</h2>
-            <form method="post" action="{{ url_for('createDonor') }}">
+            <form method="post" action="{{ url_for('createDonor') }}" enctype="multipart/form-data">
                 <label for="donorName">Donor Name:</label>
                 <input type="text" id="donorName" name="donorName" required><br>
-        
+                
+                <div class="card">
+                    <label for="photo">Photo:</label>
+                    <img src="app\static\images\istockphoto.jpg" alt="">
+                    <input type="file" id=" photo" name="photo" accept="image/jpeg,image/png,image/jpg" required><br>
+                </div>
+                
+                
+
                 <label for="bloodType">Blood Type:</label>
                 <select id="bloodType" name="bloodType" required>
                     <option value="A-">A-</option>
