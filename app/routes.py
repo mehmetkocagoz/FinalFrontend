@@ -51,6 +51,8 @@ def requestBlood():
     if request.method == 'POST':
         # Retrieve form data from the request
         form_data = request.form.to_dict()
+        form_data['units'] = int(form_data.get('units', 0))
+        form_data['duration'] = int(form_data.get('duration', 0))
         print(form_data)
         # Make a post request to API GATEWAY
         response = requests.post(API_GATEWAY_REQUEST_BLOOD, json=form_data)
@@ -82,7 +84,6 @@ def addBlood():
             api_response = response.json()
             status = api_response.get('status')
             if status=='TRUE':
-                
                 message = api_response.get('Message')
                 return render_template("addblood.html",branch_name = branch_name,message = message)
         else:
