@@ -6,3 +6,4 @@ pydantic
 requests==2.31.0
 azure.storage.blob
 python-dotenv
+uuid

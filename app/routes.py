@@ -5,6 +5,10 @@ from azure.storage.blob import BlobServiceClient
 import os
 from dotenv import load_dotenv
 from werkzeug.utils import secure_filename
+from uuid import uuid4
+
+
+
 app.secret_key = 'random_string'
 # Replace with your API Gateway URL
 API_GATEWAY_REQUEST_BLOOD = 'https://finalapigateway.azure-api.net/request'
@@ -109,8 +113,9 @@ def uploadToBlobStorage(file_storage):
         stream = file_storage.stream
         filename = secure_filename(file_storage.filename)
 
+        random_filename = str(uuid4()) + os.path.splitext(filename)[1]
         # Upload the file stream to the CDN
-        blob_client = container_client.upload_blob(name=filename, data=stream)
+        blob_client = container_client.upload_blob(name=random_filename, data=stream)
 
         # Obtain the CDN URL from the blob client
         cdn_url = blob_client.url
