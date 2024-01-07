@@ -135,9 +135,9 @@ def createDonor():
                 response = requests.post(API_GATEWAY_CREATE_DONOR, json=form_data)
                 api_response = response.json()
                 status = api_response.get('status')
-            
+
             if status == 'TRUE':
-                message = api_response.get('messsage')
+                message = api_response.get('message')
                 return render_template("createdonor.html",branch_name=branch_name,message = message)
         else:
             return render_template("createdonor.html",branch_name = branch_name)
